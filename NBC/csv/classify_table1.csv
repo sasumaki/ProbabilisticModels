@@ -1,0 +1,3 @@
+,doc,hamprob,spamprob,class
+0,"free,submission,online,!!!",0.03180542563143124,0.9681945743685687,spam
+1,"conference,paper,submission,deadline",0.8553459119496856,0.14465408805031443,ham
