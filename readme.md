@@ -1,6 +1,6 @@
-#Probabilistic Models
+# Probabilistic Models
 
-###Coding implementations of course exercises for Probabilistic Models 2018 in University of Helsinki
+### Coding implementations of course exercises for Probabilistic Models 2018 in University of Helsinki
 
 ## Week 2:
 
