@@ -30,7 +30,9 @@ def preprocess(corpus):
     spamCounts = Counter(spamwords)
 
     wordCounts = Counter(hamwords + spamwords)
-
+    print(sum(hamCounts.values()))
+    print(sum(spamCounts.values()))
+    print(sum(wordCounts.values()))
     words = wordCounts.keys()
 
     df = pd.DataFrame()
@@ -39,16 +41,18 @@ def preprocess(corpus):
     for word in df["word"]:
         if(word in hamCounts):
             hamValues.append((hamCounts.get(word) + 1) /
-                             sum(wordCounts.values()))
+                             (sum(hamCounts.values())+len(hamCounts.values())+1))
         else:
-            hamValues.append(0 + 1 / sum(wordCounts.values()))
+            hamValues.append(
+                0 + 1 / (sum(hamCounts.values())+len(hamCounts.values())+1))
     spamValues = []
     for word in df["word"]:
         if(word in spamCounts):
             spamValues.append((spamCounts.get(word) + 1) /
-                              sum(wordCounts.values()))
+                              (sum(spamCounts.values())+len(spamCounts.values())+2))
         else:
-            spamValues.append(0 + 1 / sum(wordCounts.values()))
+            spamValues.append(0 + 1 / (sum(spamCounts.values()
+                                           )+len(spamCounts.values())+2))
 
     df["ham"] = hamValues
     df["spam"] = spamValues
@@ -115,8 +119,9 @@ def generate_documents(table, hamProb, L=6, N=1000):
             y = "ham"
         else:
             y = "spam"
+
         document = np.random.choice(
-            table["word"], size=L, replace=True, p=None)
+            table["word"], size=L, replace=True, p=table[str(y)])
         separator = ","
         stringified = separator.join(document)
         documents.append(str(stringified))
@@ -159,10 +164,12 @@ if __name__ == '__main__':
                           "submission,deadline,conference,paper,call,deadline"]
 
     print(corpus)
-    corpus.to_csv("csv/corpus.csv")
+    # corpus.to_csv("csv/corpus.csv")
     corpus, table, hamProbability, spamProbability = preprocess(corpus)
     print(table)
-    table.to_csv("csv/probability_table.csv")
+    # table.to_csv("csv/probability_table.csv")
+    print(sum(table["ham"]))
+    print(sum(table["spam"]))
     """
 
     Use the NBC to calculate the posterior probability that
@@ -177,7 +184,7 @@ if __name__ == '__main__':
     hamprobTable = pd.DataFrame(
         data={"doc": corpus["document"], "hamprob": hamprob})
     print(hamprobTable)
-    hamprobTable.to_csv("csv/document_ham_table.csv")
+    # hamprobTable.to_csv("csv/document_ham_table.csv")
     """
     Use the NBC to classify the following documents
     """
@@ -188,20 +195,20 @@ if __name__ == '__main__':
         documents, table, hamProbability, spamProbability)
     classifyTable = createProbabilityTable(
         hamProb, spamProb, documents)
-    classifyTable.to_csv("csv/classify_table1.csv")
+    # classifyTable.to_csv("csv/classify_table1.csv")
     print(classifyTable)
     """
     Design an example document D of at most five words that
     is especially hard to classify with the classifier, i.e.:
     0.49 < P(C = spam|D) < 0.51
     """
-    documents2 = pd.DataFrame(data={"document": ["conference,conference,conference,free"]
+    documents2 = pd.DataFrame(data={"document": ["online,submission,free,conference,conference"]
                                     })
 
     hamprob2, spamprob2 = calculatePosteriors(
         documents2, table, hamProbability, spamProbability)
     classifyTable2 = createProbabilityTable(hamprob2, spamprob2, documents2)
-    classifyTable2.to_csv("csv/classify_table2.csv")
+    # classifyTable2.to_csv("csv/classify_table2.csv")
     print(classifyTable2)
 
     """
@@ -213,10 +220,10 @@ if __name__ == '__main__':
     observe?
     """
     scores = []
-    for i in range(1, 20):
-        scores.append(testF1(table, hamProbability, spamProbability, L=i))
+    # for i in range(1, 20):
+    #   scores.append(testF1(table, hamProbability, spamProbability, L=i))
     print(scores)
 
     plt.plot(scores)
     plt.xlabel("L")
-    plt.show()
+    # plt.show()
